@@ -51,12 +51,6 @@ class MainMenuView(BaseView):
 		
 		layout.addLayout(button_layout)
 		
-		# Informacje o modelu
-		info_label = QLabel("Model Hopfielda służy do odtwarzania zapamiętanych wzorców z zaszumionych danych.\nDemonstracja na przykładzie obrazków binarnych.")
-		info_label.setFont(QFont("Segoe UI", 14))
-		info_label.setAlignment(Qt.AlignmentFlag.AlignCenter)
-		layout.addWidget(info_label)
-		
 		layout.addStretch()
 		
 		self.setLayout(layout)
