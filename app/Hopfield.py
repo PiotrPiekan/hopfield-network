@@ -56,8 +56,8 @@ class Hopfield():
 
 		np.fill_diagonal(self.weights, 0)
 
-		self.weights /= patterns[0].size
-		self.biases /= patterns[0].size
+		self.weights /= len(patterns)
+		self.biases /= len(patterns)
 
 	def energy(self, state):
 		"""
@@ -78,7 +78,7 @@ class Hopfield():
 
 		return -0.5 * weight_energy - biases_energy
 	
-	def recall(self, input_pattern, synchronous=True, max_iterations=100, energy_tol=0):
+	def recall(self, input_pattern, synchronous=True, max_iterations=100, energy_tol=1e-9):
 		"""
 		Odtwarza wzorzec na podstawie wejściowego wzorca.
 
