@@ -36,26 +36,6 @@ def load_fashion_mnist_patterns(parent, num_patterns=5, target_size=(28, 28)):
 			QMessageBox.critical(parent, "Błąd", f"Błąd podczas ładowania MNIST Fashion: {str(e)}")
 		return None
 
-def get_random_fashion_mnist_image(parent, num_patterns=5, target_size=(28, 28)):
-	"""Pobiera losowy obrazek z MNIST Fashion"""
-	try:
-		# Załaduj dataset
-		dataset = load_dataset("fashion_mnist", split="test")
-		
-		# Wybierz losowy obrazek
-		random_idx = np.random.randint(0, num_patterns)
-		image = dataset[random_idx]['image']
-		
-		# Zmień rozmiar i binaryzuj
-		resized = resize_image(image, target_size)
-		binary_pattern = binarize_image(resized)
-		
-		return binary_pattern
-		
-	except Exception as e:
-		QMessageBox.critical(parent, "Błąd", f"Błąd podczas ładowania obrazka: {str(e)}")
-		return None
-
 if __name__ == "__main__":
 	import app
 	app.main()

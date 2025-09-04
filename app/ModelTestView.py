@@ -92,13 +92,7 @@ class ModelTestView(BaseView):
 		
 		layout.addStretch()
 		
-		# Przyciski generowania i edycji wzorców
-		mnist_fashion_button = QPushButton("Losowy MNIST Fashion")
-		mnist_fashion_button.setFont(QFont("Segoe UI", 12))
-		mnist_fashion_button.setMinimumHeight(35)
-		mnist_fashion_button.clicked.connect(self.load_random_mnist_fashion)
-		layout.addWidget(mnist_fashion_button)
-		
+		# Przyciski zastąpienia całego wzorca wejściowego kolorem
 		fill_white_button = QPushButton("Wypełnij białym")
 		fill_white_button.setFont(QFont("Segoe UI", 12))
 		fill_white_button.setMinimumHeight(25)
@@ -110,6 +104,30 @@ class ModelTestView(BaseView):
 		fill_black_button.setMinimumHeight(25)
 		fill_black_button.clicked.connect(self.fill_black)
 		layout.addWidget(fill_black_button)
+
+		# Lista wzorców treningowych do wyboru
+		pattern_layout = QHBoxLayout()
+		
+		pattern_label = QLabel("Wzorzec:")
+		pattern_label.setFont(QFont("Segoe UI", 12))
+		pattern_layout.addWidget(pattern_label)
+		
+		self.pattern_spinbox = QSpinBox()
+		self.pattern_spinbox.setRange(1, 1)
+		self.pattern_spinbox.setValue(1)
+		self.pattern_spinbox.setFont(QFont("Segoe UI", 12))
+		self.pattern_spinbox.setMinimumHeight(25)
+		pattern_layout.addWidget(self.pattern_spinbox)
+		
+		layout.addLayout(pattern_layout)
+		
+		load_pattern_button = QPushButton("Załaduj wzorzec")
+		load_pattern_button.setFont(QFont("Segoe UI", 12))
+		load_pattern_button.setMinimumHeight(35)
+		load_pattern_button.clicked.connect(self.load_selected_pattern)
+		layout.addWidget(load_pattern_button)
+		
+		layout.addStretch()
 		
 		# Kontrolki szumu
 		noise_layout = QHBoxLayout()
@@ -277,18 +295,6 @@ class ModelTestView(BaseView):
 		
 		self.canvas_container_layout.addWidget(self.output_canvas)
 	
-	def load_random_mnist_fashion(self):
-		"""Ładuje losowy obrazek z MNIST Fashion do canvas wejściowego"""
-		try:
-			# Przekaż aktualne wymiary grida
-			random_pattern = MNISTLoader.get_random_fashion_mnist_image(
-				self, target_size=(self.grid_width, self.grid_height)
-			)
-			if random_pattern is not None:
-				self.input_canvas.set_pixels(random_pattern)
-		except Exception as e:
-			QMessageBox.critical(self, "Błąd", f"Nie udało się załadować obrazka:\n{str(e)}")
-	
 	def fill_white(self):
 		"""Wypełnia canvas wejściowy białymi pikselami"""
 		if self.input_canvas:
@@ -318,6 +324,31 @@ class ModelTestView(BaseView):
 		noisy_pixels = flat_pixels.reshape(current_pixels.shape)
 		self.input_canvas.set_pixels(noisy_pixels)
 	
+	def load_selected_pattern(self):
+		"""Ładuje wybrany wzorzec do canvas wejściowego"""
+		if not self.patterns:
+			QMessageBox.warning(self, "Błąd", "Brak dostępnych wzorców")
+			return
+		
+		try:
+			pattern_index = self.pattern_spinbox.value() - 1  # Spinbox zaczyna od 1
+			if 0 <= pattern_index < len(self.patterns):
+				selected_pattern = self.patterns[pattern_index]
+				self.input_canvas.set_pixels(selected_pattern)
+			else:
+				QMessageBox.warning(self, "Błąd", "Nieprawidłowy numer wzorca")
+		except Exception as e:
+			QMessageBox.critical(self, "Błąd", f"Nie udało się załadować wzorca:\n{str(e)}")
+
+	def update_pattern_spinbox_range(self):
+			"""Aktualizuje zakres spinbox z wzorcami"""
+			if self.patterns:
+				self.pattern_spinbox.setRange(1, len(self.patterns))
+				self.pattern_spinbox.setValue(1)
+			else:
+				self.pattern_spinbox.setRange(1, 1)
+				self.pattern_spinbox.setValue(1)
+
 	def recall_pattern(self):
 		"""Uruchamia proces odtwarzania wzorca przez sieć"""
 		if not self.input_canvas or not self.model:
@@ -405,6 +436,7 @@ class ModelTestView(BaseView):
 		self.model.train(patterns)
 		
 		self.create_canvases()
+		self.update_pattern_spinbox_range()
 	
 	def import_model_data(self, model_data):
 		"""Importuje pełne dane modelu z pliku"""
@@ -419,6 +451,7 @@ class ModelTestView(BaseView):
 		self.model = Hopfield(size, model_data['weights'], model_data['biases'])
 		
 		self.create_canvases()
+		self.update_pattern_spinbox_range()
 	
 	def switch_to_pattern_edit(self):
 		"""Przechodzi do widoku edycji wzorców"""
