@@ -105,12 +105,12 @@ class Hopfield():
 
 		for iteration in range(max_iterations):
 			if synchronous:
-				activation = np.dot(self.weights, state) + self.biases
+				activation = np.dot(self.weights, state)
 				state = np.where(activation >= 0, 1, -1)
 			else:
 				idx = np.random.permutation(self.size)
 				for i in idx:
-					activation = np.dot(self.weights[i], state) + self.biases[i]
+					activation = np.dot(self.weights[i], state)
 					state[i] = 1 if activation >= 0 else -1
 
 			states_history.append(state.copy())
