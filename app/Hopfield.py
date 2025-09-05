@@ -107,14 +107,17 @@ class Hopfield():
 			if synchronous:
 				activation = np.dot(self.weights, state)
 				state = np.where(activation >= 0, 1, -1)
+
+				states_history.append(state.copy())
+				energy_history.append(self.energy(state))
 			else:
 				idx = np.random.permutation(self.size)
 				for i in idx:
 					activation = np.dot(self.weights[i], state)
 					state[i] = 1 if activation >= 0 else -1
 
-			states_history.append(state.copy())
-			energy_history.append(self.energy(state))
+					states_history.append(state.copy())
+					energy_history.append(self.energy(state))
 
 			if abs(energy_history[-1] - energy_history[-2]) < energy_tol:
 				break
