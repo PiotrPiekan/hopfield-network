@@ -13,6 +13,12 @@ from BaseView import BaseView
 from PixelGridCanvas import PixelGridCanvas
 from Hopfield import Hopfield
 
+
+import sys
+import os
+sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'tools'))
+from tools import save_images_to_file
+
 class ModelTestView(BaseView):
 	"""Widok do testowania wytrenowanego modelu sieci Hopfielda"""
 	
@@ -400,6 +406,8 @@ class ModelTestView(BaseView):
 			
 			# Narysuj wykres energii
 			self.plot_energy(energy_history)
+
+			save_images_to_file(input_pattern, states_history[-1])
 			
 		except Exception as e:
 			QMessageBox.critical(self, "Błąd", f"Błąd podczas odtwarzania:\n{str(e)}")
