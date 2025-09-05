@@ -111,8 +111,18 @@ class PatternEditView(BaseView):
 		
 		bottom_row.addStretch()
 		
-		# Przycisk importu MNIST Fashion
-		mnist_button = QPushButton("MNIST Fashion")
+		# Importu z MNIST Fashion
+		mnist_count_label = QLabel("Liczba wzorców:")
+		mnist_count_label.setFont(QFont("Segoe UI", 12))
+		bottom_row.addWidget(mnist_count_label)
+
+		self.mnist_count_spinbox = QSpinBox()
+		self.mnist_count_spinbox.setFont(QFont("Segoe UI", 12))
+		self.mnist_count_spinbox.setRange(1, 100)
+		self.mnist_count_spinbox.setValue(5)
+		bottom_row.addWidget(self.mnist_count_spinbox)
+
+		mnist_button = QPushButton("Pobierz wzorce z sieci")
 		mnist_button.setFont(QFont("Segoe UI", 12))
 		mnist_button.setStyleSheet("""padding: 0.75em 1.5em;""")
 		mnist_button.clicked.connect(self.import_mnist_fashion)
@@ -289,9 +299,11 @@ class PatternEditView(BaseView):
 	def import_mnist_fashion(self):
 		"""Importuje wzorce z MNIST Fashion"""
 		try:
+			pattern_count = self.mnist_count_spinbox.value()
+
 			# Przekaż aktualne wymiary grida
 			patterns = MNISTLoader.load_fashion_mnist_patterns(
-				self, target_size=(self.grid_width, self.grid_height)
+				self, target_size=(self.grid_width, self.grid_height), num_patterns=pattern_count
 			)
 			if patterns is not None and len(patterns) > 0:
 				# Ustaw wzorce

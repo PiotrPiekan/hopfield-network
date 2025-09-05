@@ -331,7 +331,7 @@ class ModelTestView(BaseView):
 			return
 		
 		try:
-			pattern_index = self.pattern_spinbox.value() - 1  # Spinbox zaczyna od 1
+			pattern_index = self.pattern_spinbox.value() - 1
 			if 0 <= pattern_index < len(self.patterns):
 				selected_pattern = self.patterns[pattern_index]
 				self.input_canvas.set_pixels(selected_pattern)
