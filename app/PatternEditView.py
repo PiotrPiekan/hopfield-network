@@ -20,6 +20,7 @@ class PatternEditView(BaseView):
 
 		self.current_pattern_id = -1
 		self.patterns = []
+		self.pattern_buttons = []
 
 		self.setup_ui()
 		self.reset_patterns()
@@ -212,6 +213,8 @@ class PatternEditView(BaseView):
 			item = self.scroll_layout.takeAt(0)
 			if item.widget():
 				item.widget().deleteLater()
+
+		self.pattern_buttons.clear()
 		
 		# Dodaj przyciski dla wszystkich wzorców
 		for i in range(len(self.patterns)):
@@ -219,6 +222,7 @@ class PatternEditView(BaseView):
 			pattern_button.setFont(QFont("Segoe UI", 10))
 			pattern_button.setMinimumHeight(35)
 			pattern_button.clicked.connect(lambda checked, idx=i: self.select_pattern(idx))
+			self.pattern_buttons.append(pattern_button)
 			self.scroll_layout.addWidget(pattern_button)
 		
 		# Dodaj przycisk "Dodaj wzorzec" na końcu
@@ -230,6 +234,13 @@ class PatternEditView(BaseView):
 		
 		# Dodaj stretch na końcu
 		self.scroll_layout.addStretch()
+
+	def update_buttons_style(self):
+		for i, btn in enumerate(self.pattern_buttons):
+			if i == self.current_pattern_id:
+				btn.setStyleSheet("background-color: #222288")
+			else:
+				btn.setStyleSheet("")
 	
 	def create_model(self):
 		"""Przechodzi do testowania modelu z aktualnymi wzorcami"""
@@ -251,20 +262,23 @@ class PatternEditView(BaseView):
 			self.create_canvas()
 		
 		self.patterns = patterns.copy()
-		self.select_pattern(0)
 		self.update_pattern_scroll_list()
+		self.select_pattern(0)
 
 	def select_pattern(self, pattern_index):
 		"""Wybiera wzorzec do edycji"""
 		self.current_pattern_id = pattern_index
 		self.load_current_pattern_to_canvas()
+
+		if self.current_pattern_id != pattern_index:
+			self.update_buttons_style()
 	
 	def add_pattern(self):
 		"""Dodaje nowy pusty wzorzec"""
 		new_pattern = np.full((self.grid_height, self.grid_width), -1, dtype=int)
 		self.patterns.append(new_pattern)
-		self.select_pattern(len(self.patterns) - 1)
 		self.update_pattern_scroll_list()
+		self.select_pattern(len(self.patterns) - 1)
 	
 	def delete_current_pattern(self):
 		"""Usuwa aktualnie wybrany wzorzec"""
@@ -272,15 +286,15 @@ class PatternEditView(BaseView):
 			self.fill_white()
 		else:
 			del self.patterns[self.current_pattern_id]
-			self.select_pattern(max(0, self.current_pattern_id - 1))
 			self.update_pattern_scroll_list()
+			self.select_pattern(max(0, self.current_pattern_id - 1))
 	
 	def reset_patterns(self):
 		"""Resetuje wszystkie wzorce do jednego pustego"""
 		empty_pattern = np.full((self.grid_height, self.grid_width), -1, dtype=int)
 		self.patterns = [empty_pattern]
-		self.select_pattern(0)
 		self.update_pattern_scroll_list()
+		self.select_pattern(0)
 	
 	def set_pattern_dimensions(self):
 		"""Ustawia nowe wymiary wzorców"""
