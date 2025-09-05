@@ -73,19 +73,19 @@ class ModelTestView(BaseView):
 		# Przyciski zarządzania modelami
 		edit_button = QPushButton("Edytuj wzorce")
 		edit_button.setFont(QFont("Segoe UI", 12))
-		edit_button.setMinimumHeight(35)
+		edit_button.setMinimumHeight(25)
 		edit_button.clicked.connect(self.switch_to_pattern_edit)
 		layout.addWidget(edit_button)
 		
 		import_button = QPushButton("Importuj model")
 		import_button.setFont(QFont("Segoe UI", 12))
-		import_button.setMinimumHeight(35)
+		import_button.setMinimumHeight(25)
 		import_button.clicked.connect(self.import_model)
 		layout.addWidget(import_button)
 		
 		export_button = QPushButton("Eksportuj model")
 		export_button.setFont(QFont("Segoe UI", 12))
-		export_button.setMinimumHeight(35)
+		export_button.setMinimumHeight(25)
 		export_button.clicked.connect(self.export_model)
 		layout.addWidget(export_button)
 		
@@ -130,7 +130,7 @@ class ModelTestView(BaseView):
 		
 		load_pattern_button = QPushButton("Załaduj wzorzec")
 		load_pattern_button.setFont(QFont("Segoe UI", 12))
-		load_pattern_button.setMinimumHeight(35)
+		load_pattern_button.setMinimumHeight(25)
 		load_pattern_button.clicked.connect(self.load_selected_pattern)
 		layout.addWidget(load_pattern_button)
 		
@@ -159,6 +159,26 @@ class ModelTestView(BaseView):
 		layout.addWidget(add_noise_button)
 		
 		# Opcje algorytmu
+		max_iterations_layout = QHBoxLayout()
+		
+		max_iterations_label = QLabel("Liczba iteracji:")
+		max_iterations_label.setFont(QFont("Segoe UI", 12))
+		max_iterations_layout.addWidget(max_iterations_label)
+		
+		self.max_iterations_spinbox = QSpinBox()
+		self.max_iterations_spinbox.setRange(1, 1000)
+		self.max_iterations_spinbox.setValue(10)
+		self.max_iterations_spinbox.setFont(QFont("Segoe UI", 12))
+		self.max_iterations_spinbox.setMinimumHeight(25)
+		max_iterations_layout.addWidget(self.max_iterations_spinbox)
+		
+		layout.addLayout(max_iterations_layout)
+
+		self.early_stopping_checkbox = QCheckBox("Wczesne zatrzymanie")
+		self.early_stopping_checkbox.setFont(QFont("Segoe UI", 12))
+		self.early_stopping_checkbox.setChecked(True)
+		layout.addWidget(self.early_stopping_checkbox)
+
 		self.synchronous_checkbox = QCheckBox("Odtwarzanie synchroniczne")
 		self.synchronous_checkbox.setFont(QFont("Segoe UI", 12))
 		self.synchronous_checkbox.setChecked(True)
@@ -167,7 +187,7 @@ class ModelTestView(BaseView):
 		# Główny przycisk odtwarzania
 		recall_button = QPushButton("Odtwórz wzorzec")
 		recall_button.setFont(QFont("Segoe UI", 12, QFont.Weight.Bold))
-		recall_button.setMinimumHeight(40)
+		recall_button.setMinimumHeight(30)
 		recall_button.clicked.connect(self.recall_pattern)
 		layout.addWidget(recall_button)
 		
@@ -388,11 +408,15 @@ class ModelTestView(BaseView):
 		
 		input_pattern = self.input_canvas.get_pixels()
 		synchronous = self.synchronous_checkbox.isChecked()
+		max_iterations = self.max_iterations_spinbox.value()
+		early_stopping = self.early_stopping_checkbox.isChecked()
 		
 		try:
 			states_history, energy_history = self.model.recall(
 				input_pattern, 
 				synchronous=synchronous,
+				max_iterations=max_iterations,
+				energy_tol=1e-9 if early_stopping else 0
 			)
 			
 			self.recall_history = states_history

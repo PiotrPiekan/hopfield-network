@@ -78,7 +78,7 @@ class Hopfield():
 
 		return -0.5 * weight_energy - biases_energy
 	
-	def recall(self, input_pattern, synchronous=True, max_iterations=100, energy_tol=1e-9):
+	def recall(self, input_pattern, synchronous=True, max_iterations=10, energy_tol=1e-9):
 		"""
 		Odtwarza wzorzec na podstawie wejściowego wzorca.
 
