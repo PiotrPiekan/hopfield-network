@@ -122,7 +122,7 @@ class PatternEditView(BaseView):
 		self.mnist_count_spinbox.setValue(5)
 		bottom_row.addWidget(self.mnist_count_spinbox)
 
-		mnist_button = QPushButton("Pobierz wzorce z sieci")
+		mnist_button = QPushButton("Pobierz wzorce MNIST")
 		mnist_button.setFont(QFont("Segoe UI", 12))
 		mnist_button.setStyleSheet("""padding: 0.75em 1.5em;""")
 		mnist_button.clicked.connect(self.import_mnist_fashion)
