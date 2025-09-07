@@ -119,7 +119,7 @@ class PatternEditView(BaseView):
 
 		self.mnist_count_spinbox = QSpinBox()
 		self.mnist_count_spinbox.setFont(QFont("Segoe UI", 12))
-		self.mnist_count_spinbox.setRange(1, 100)
+		self.mnist_count_spinbox.setRange(1, 10000)
 		self.mnist_count_spinbox.setValue(5)
 		bottom_row.addWidget(self.mnist_count_spinbox)
 
@@ -269,9 +269,7 @@ class PatternEditView(BaseView):
 		"""Wybiera wzorzec do edycji"""
 		self.current_pattern_id = pattern_index
 		self.load_current_pattern_to_canvas()
-
-		if self.current_pattern_id != pattern_index:
-			self.update_buttons_style()
+		self.update_buttons_style()
 	
 	def add_pattern(self):
 		"""Dodaje nowy pusty wzorzec"""

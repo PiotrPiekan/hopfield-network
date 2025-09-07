@@ -13,7 +13,6 @@ from BaseView import BaseView
 from PixelGridCanvas import PixelGridCanvas
 from Hopfield import Hopfield
 
-
 import sys
 import os
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'tools'))
@@ -166,7 +165,7 @@ class ModelTestView(BaseView):
 		max_iterations_layout.addWidget(max_iterations_label)
 		
 		self.max_iterations_spinbox = QSpinBox()
-		self.max_iterations_spinbox.setRange(1, 1000)
+		self.max_iterations_spinbox.setRange(1, 10000)
 		self.max_iterations_spinbox.setValue(10)
 		self.max_iterations_spinbox.setFont(QFont("Segoe UI", 12))
 		self.max_iterations_spinbox.setMinimumHeight(25)
