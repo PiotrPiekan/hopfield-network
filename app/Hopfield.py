@@ -110,6 +110,9 @@ class Hopfield():
 
 				states_history.append(state.copy())
 				energy_history.append(self.energy(state))
+
+				if abs(energy_history[-1] - energy_history[-2]) < energy_tol:
+					break
 			else:
 				idx = np.random.permutation(self.size)
 				for i in idx:
@@ -119,8 +122,8 @@ class Hopfield():
 					states_history.append(state.copy())
 					energy_history.append(self.energy(state))
 
-			if abs(energy_history[-1] - energy_history[-2]) < energy_tol:
-				break
+				if abs(energy_history[-1] - energy_history[-1-self.size]) < energy_tol:
+					break
 
 		return states_history, energy_history
 
