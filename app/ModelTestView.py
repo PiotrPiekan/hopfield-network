@@ -32,7 +32,7 @@ class ModelTestView(BaseView):
 		self.grid_width = 28
 		self.grid_height = 28
 		self.recall_history = []
-		self.similarity_table = None
+		self.accuracy_table = None
 		self.setup_ui()
 		
 	def setup_ui(self):
@@ -288,28 +288,28 @@ class ModelTestView(BaseView):
 		tab_widget.addTab(plot_tab, "Energia")
 
 		# Zakładka z zgodnością wzorców
-		similarity_tab = QWidget()
-		similarity_layout = QVBoxLayout(similarity_tab)
+		accuracy_tab = QWidget()
+		accuracy_layout = QVBoxLayout(accuracy_tab)
 		
-		similarity_title = QLabel("Zgodność z wzorcami treningowymi")
-		similarity_title.setFont(QFont("Segoe UI", 12, QFont.Weight.Bold))
-		similarity_title.setAlignment(Qt.AlignmentFlag.AlignCenter)
-		similarity_layout.addWidget(similarity_title)
+		accuracy_title = QLabel("Zgodność z wzorcami treningowymi")
+		accuracy_title.setFont(QFont("Segoe UI", 12, QFont.Weight.Bold))
+		accuracy_title.setAlignment(Qt.AlignmentFlag.AlignCenter)
+		accuracy_layout.addWidget(accuracy_title)
 		
-		self.similarity_table = QTableWidget()
-		self.similarity_table.setColumnCount(2)
-		self.similarity_table.setHorizontalHeaderLabels(["Wzorzec", "Zgodność (%)"])
+		self.accuracy_table = QTableWidget()
+		self.accuracy_table.setColumnCount(2)
+		self.accuracy_table.setHorizontalHeaderLabels(["Wzorzec", "Zgodność (%)"])
 		
-		header = self.similarity_table.horizontalHeader()
+		header = self.accuracy_table.horizontalHeader()
 		header.setSectionResizeMode(0, QHeaderView.ResizeMode.Stretch)
 		header.setSectionResizeMode(1, QHeaderView.ResizeMode.Stretch)
 		
-		self.similarity_table.setAlternatingRowColors(True)
-		self.similarity_table.setSelectionBehavior(QTableWidget.SelectionBehavior.SelectRows)
+		self.accuracy_table.setAlternatingRowColors(True)
+		self.accuracy_table.setSelectionBehavior(QTableWidget.SelectionBehavior.SelectRows)
 		
-		similarity_layout.addWidget(self.similarity_table)
+		accuracy_layout.addWidget(self.accuracy_table)
 		
-		tab_widget.addTab(similarity_tab, "Zgodność wzorców")
+		tab_widget.addTab(accuracy_tab, "Zgodność wzorców")
 		
 		layout.addWidget(tab_widget)
 		
@@ -441,7 +441,7 @@ class ModelTestView(BaseView):
 			pattern = self.recall_history[value].reshape(self.grid_height, self.grid_width)
 			self.output_canvas.set_pixels(pattern)
 			self.update_iteration_label()
-			self.update_similarity_table(pattern)
+			self.update_accuracy_table(pattern)
 	
 	def update_iteration_label(self):
 		"""Aktualizuje etykietę z numerem iteracji"""
@@ -463,39 +463,39 @@ class ModelTestView(BaseView):
 		self.figure.tight_layout()
 		self.canvas_plot.draw()
 
-	def calculate_pattern_similarity(self, output_pattern):
+	def calculate_pattern_accuracy(self, output_pattern):
 		"""Oblicza zgodność wzorca wyjściowego z wzorcami treningowymi"""
 		if not self.patterns:
 			return []
 		
-		similarities = []
+		accuracies = []
 		
 		for i, pattern in enumerate(self.patterns):
 			matches = np.sum(output_pattern == pattern)
-			similarity = (matches / pattern.size) * 100
+			accuracy = (matches / pattern.size) * 100
 			
-			similarities.append((i + 1, similarity))
+			accuracies.append((i + 1, accuracy))
 		
-		return similarities
+		return accuracies
 	
-	def update_similarity_table(self, output_pattern):
+	def update_accuracy_table(self, output_pattern):
 		"""Aktualizuje tabelę zgodności wzorców"""
-		if not self.similarity_table:
+		if not self.accuracy_table:
 			return
 		
-		similarities = self.calculate_pattern_similarity(output_pattern)
+		accuracies = self.calculate_pattern_accuracy(output_pattern)
 		
-		self.similarity_table.setRowCount(len(similarities))
+		self.accuracy_table.setRowCount(len(accuracies))
 		
-		for row, (pattern_num, similarity) in enumerate(similarities):
+		for row, (pattern_num, accuracy) in enumerate(accuracies):
 			pattern_item = QTableWidgetItem(f"Wzorzec {pattern_num}")
 			pattern_item.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
 			
-			similarity_item = QTableWidgetItem(f"{similarity:.1f}")
-			similarity_item.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
+			accuracy_item = QTableWidgetItem(f"{accuracy:.1f}")
+			accuracy_item.setTextAlignment(Qt.AlignmentFlag.AlignCenter)
 			
-			self.similarity_table.setItem(row, 0, pattern_item)
-			self.similarity_table.setItem(row, 1, similarity_item)
+			self.accuracy_table.setItem(row, 0, pattern_item)
+			self.accuracy_table.setItem(row, 1, accuracy_item)
 	
 	def set_model_data(self, patterns, existing_model=None):
 		"""Ustawia dane modelu z wzorcami i opcjonalnie istniejącym modelem"""
