@@ -1,6 +1,6 @@
 # Sieć Hopfielda
 
-Program graficzny do tworzenia sieci hopfielda na podstawie czarno-białych obrazków.
+Program do tworzenia sieci hopfielda na podstawie czarno-białych obrazków.
 
 Funkcje:
 
